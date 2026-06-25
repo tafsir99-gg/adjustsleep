@@ -17,7 +17,11 @@
 
 ## 📸 Preview
 
-![Screenshot Placeholder](public/og-image.jpg) *(Replace this path with your actual application screenshot)*
+### Step 1: Your Details (Input Form)
+![Step 1: Input Form](public/step1.png)
+
+### Step 2: Your Plan (Recovery Timeline)
+![Step 2: Recovery Timeline](public/step2.png)
 
 ## ✨ Features
 
