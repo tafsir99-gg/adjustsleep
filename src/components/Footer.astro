@@ -1,0 +1,66 @@
+---
+// src/components/Footer.astro
+---
+
+<footer class="bg-[var(--theme-canvas)] border-t border-[var(--theme-hairline)] pt-section pb-4xl px-lg mt-auto">
+  <div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-xl">
+    
+    <div class="md:col-span-1 flex flex-col gap-4">
+      <div class="flex items-center gap-xs text-[var(--theme-ink)]">
+        <a href="/" class="flex items-center gap-xs focus-ring rounded-sm">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 22H22L12 2Z" fill="currentColor"/>
+          </svg>
+          <span class="font-sans font-medium text-body-sm-strong">Adjust Sleep</span>
+        </a>
+      </div>
+      <p class="text-caption text-[var(--theme-body)] max-w-[200px]">
+        A premium jet lag calculator powered by circadian science.
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <h4 class="font-mono text-caption-mono text-[var(--theme-ink)] uppercase tracking-wider mb-2">Algorithm</h4>
+      <a href="#science" class="text-body-sm text-[var(--theme-body)] hover:text-[var(--theme-ink)] transition-colors">Phase Response Curve</a>
+      <a href="#science" class="text-body-sm text-[var(--theme-body)] hover:text-[var(--theme-ink)] transition-colors">CBTmin Calculation</a>
+      <a href="#science" class="text-body-sm text-[var(--theme-body)] hover:text-[var(--theme-ink)] transition-colors">Melatonin Protocols</a>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <h4 class="font-mono text-caption-mono text-[var(--theme-ink)] uppercase tracking-wider mb-2">Legal & Privacy</h4>
+      <a href="/privacy" class="text-body-sm text-[var(--theme-body)] hover:text-[var(--theme-ink)] transition-colors">Privacy Policy</a>
+      <a href="/terms" class="text-body-sm text-[var(--theme-body)] hover:text-[var(--theme-ink)] transition-colors">Terms of Service</a>
+      <p class="text-caption text-[var(--theme-mute)] mt-2">
+        Zero external APIs. All calculations run locally in your browser.
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <h4 class="font-mono text-caption-mono text-[var(--theme-ink)] uppercase tracking-wider mb-2">Disclaimer</h4>
+      <p class="text-caption text-[var(--theme-mute)] leading-relaxed">
+        This tool provides schedules based on general circadian rhythm models. It is not medical advice. Consult a healthcare professional before taking supplements like melatonin, especially if you have underlying conditions.
+      </p>
+    </div>
+
+  </div>
+  
+  <div class="max-w-[1400px] mx-auto mt-20 flex flex-wrap justify-center items-center gap-3 text-caption text-[var(--theme-mute)]">
+    <a href="/about" class="hover:text-[var(--theme-ink)] transition-colors focus-ring rounded-sm px-1">About</a>
+    <span>&middot;</span>
+    <a href="/contact" class="hover:text-[var(--theme-ink)] transition-colors focus-ring rounded-sm px-1">Contact</a>
+    <span>&middot;</span>
+    <a href="/privacy" class="text-[var(--theme-body)] hover:text-[var(--theme-ink)] font-medium transition-colors focus-ring rounded-sm px-1">Privacy Policy</a>
+    <span>&middot;</span>
+    <a href="/terms" class="hover:text-[var(--theme-ink)] transition-colors focus-ring rounded-sm px-1">Terms</a>
+  </div>
+
+  <div class="max-w-[1400px] mx-auto mt-8 pt-8 border-t border-[var(--theme-hairline-strong)] opacity-50 flex flex-col sm:flex-row items-center justify-between">
+    <p class="text-caption text-[var(--theme-body)]">
+      &copy; {new Date().getFullYear()} Adjust Sleep. All rights reserved.
+    </p>
+    <div class="flex gap-4 mt-4 sm:mt-0">
+      <a href="https://twitter.com/adjustsleep" target="_blank" rel="noopener noreferrer" class="text-caption text-[var(--theme-body)] hover:text-[var(--theme-ink)] transition-colors">Twitter</a>
+      <a href="https://github.com/adjustsleep" target="_blank" rel="noopener noreferrer" class="text-caption text-[var(--theme-body)] hover:text-[var(--theme-ink)] transition-colors">GitHub</a>
+    </div>
+  </div>
+</footer>

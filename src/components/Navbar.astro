@@ -1,0 +1,63 @@
+---
+// src/components/Navbar.astro
+---
+
+<nav class="h-[64px] px-sm lg:px-lg flex items-center justify-between bg-[var(--theme-canvas)] border-b border-[var(--theme-hairline)]">
+  <a href="/" class="flex items-center gap-xs focus-ring rounded-sm">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-[var(--theme-ink)]">
+      <path d="M12 2L2 22H22L12 2Z" fill="currentColor"/>
+    </svg>
+    <span class="font-sans font-medium text-[var(--theme-ink)] text-body-sm-strong tracking-[-0.28px]">
+      Adjust Sleep
+    </span>
+  </a>
+  
+  <div class="flex items-center gap-sm">
+    <button id="theme-toggle" class="p-xs rounded-full hover:bg-[var(--theme-canvas-soft)] text-[var(--theme-body)] transition-colors focus-ring" aria-label="Toggle dark mode">
+      <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Moon icon -->
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+      </svg>
+      <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Sun icon -->
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+      </svg>
+    </button>
+    <a href="/#science" class="hidden sm:inline-flex items-center justify-center h-[28px] px-xs bg-[var(--theme-canvas)] text-[var(--theme-ink)] border border-[var(--theme-hairline)] rounded-sm text-[14px] font-medium tracking-[-0.28px] hover:bg-[var(--theme-canvas-soft)] transition-colors focus-ring">
+      Our Science
+    </a>
+    <a href="/#calculator" class="inline-flex items-center justify-center h-[28px] px-xs bg-[var(--theme-primary)] text-[var(--theme-on-primary)] rounded-sm text-[14px] font-medium tracking-[-0.28px] hover:opacity-90 transition-opacity focus-ring">
+      Get Started
+    </a>
+  </div>
+</nav>
+
+<script>
+  // Runs after the page has loaded
+  const toggleBtn = document.getElementById('theme-toggle');
+  const iconDark = document.getElementById('theme-icon-dark');
+  const iconLight = document.getElementById('theme-icon-light');
+
+  function updateIcons() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      iconDark?.classList.add('hidden');
+      iconLight?.classList.remove('hidden');
+    } else {
+      iconLight?.classList.add('hidden');
+      iconDark?.classList.remove('hidden');
+    }
+  }
+
+  // Initialize icons based on current theme
+  updateIcons();
+
+  toggleBtn?.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateIcons();
+  });
+</script>

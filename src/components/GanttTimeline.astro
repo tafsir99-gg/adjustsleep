@@ -1,0 +1,116 @@
+---
+// src/components/GanttTimeline.astro
+---
+
+<div id="gantt-container" class="hidden flex flex-col w-full bg-[var(--theme-primary)] rounded-lg p-4 md:p-lg shadow-md border border-[var(--theme-hairline)]">
+  <!-- Header row: title + legend -->
+  <div class="mb-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+    <h3 class="font-sans font-semibold text-[20px] md:text-display-md text-[var(--theme-on-primary)] tracking-[-0.96px]">Recovery Timeline</h3>
+    <div class="flex flex-wrap items-center gap-3 text-caption text-[var(--theme-mute)]">
+      <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-[#29bc9b]"></span> Seek Light</div>
+      <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-[#171717] border border-[#333]"></span> Sleep</div>
+      <div class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#7928ca]"></span> Melatonin</div>
+    </div>
+  </div>
+
+  <!-- Scroll hint on mobile only -->
+  <p class="sm:hidden font-mono text-[10px] uppercase tracking-widest text-[var(--theme-on-primary)] opacity-40 mb-2 text-right">← swipe to scroll →</p>
+
+  <!-- Horizontally scrollable chart area -->
+  <div class="overflow-x-auto overscroll-x-contain pb-2" style="-webkit-overflow-scrolling: touch;">
+    <div class="min-w-[680px]">
+      <!-- X-Axis (Hours) — offset to match sticky label column width -->
+      <div class="flex border-b border-[var(--theme-hairline-strong)] opacity-50 pb-2 mb-4 ml-[108px]">
+        {[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24].map(hour => (
+          <div class="flex-1 text-center font-mono text-[10px] text-[var(--theme-on-primary)]" style={`width: ${100/12}%`}>
+            {hour}:00
+          </div>
+        ))}
+      </div>
+
+      <!-- Rows container, populated by JS -->
+      <div id="gantt-rows" class="space-y-3">
+        <!-- JS will render rows here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import type { ScheduleDay } from '../lib/types';
+
+  export function renderTimeline(schedule: ScheduleDay[]) {
+    const container = document.getElementById('gantt-container');
+    const rowsEl = document.getElementById('gantt-rows');
+    if (!container || !rowsEl) return;
+
+    rowsEl.innerHTML = ''; // Clear previous
+
+    schedule.forEach(day => {
+      const row = document.createElement('div');
+      row.className = 'flex items-center relative h-[32px]';
+
+      // Y-axis label — sticky so it stays visible as the chart scrolls left on mobile
+      const label = document.createElement('div');
+      label.className = 'sticky left-0 z-10 w-[108px] shrink-0 font-sans text-[11px] font-semibold text-[var(--theme-on-primary)] pr-3 truncate bg-[var(--theme-primary)]';
+      label.textContent = day.label;
+      row.appendChild(label);
+
+      // Timeline track
+      const track = document.createElement('div');
+      track.className = 'flex-1 relative h-full bg-[#ffffff05] rounded-sm border border-[#ffffff10]';
+
+      day.blocks.forEach(block => {
+        const bar = document.createElement('div');
+        
+        // Calculate position
+        const leftPercent = (block.startHour / 24) * 100;
+        let widthPercent = ((block.endHour - block.startHour) / 24) * 100;
+        
+        // Handle midnight wrap (though circadian.ts already splits them, just in case)
+        if (widthPercent < 0) {
+            widthPercent = ((24 - block.startHour + block.endHour) / 24) * 100;
+        }
+
+        bar.style.left = `${leftPercent}%`;
+        bar.style.width = `${widthPercent}%`;
+        
+        // Style based on type
+        if (block.type === 'seek-light') {
+          bar.className = 'absolute h-full rounded-sm bg-gradient-to-r from-[var(--color-cyan-deep)] to-[var(--color-cyan)] opacity-90 hover:opacity-100 transition-opacity cursor-help border border-[#ffffff20]';
+        } else if (block.type === 'avoid-light' || block.type === 'sleep') {
+          bar.className = 'absolute h-full rounded-sm bg-[#171717] opacity-80 border border-[#333] hover:opacity-100 transition-opacity cursor-help';
+        } else if (block.type === 'melatonin') {
+          // Melatonin is a point in time, render as a dot
+          bar.className = 'absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[var(--color-violet)] hover:scale-125 transition-transform cursor-help z-10 shadow-sm';
+          bar.style.width = '12px';
+          // Center the dot on the start time
+          bar.style.left = `calc(${leftPercent}% - 6px)`;
+        }
+
+        // Tooltip
+        const formatTime = (h: number) => {
+            const hrs = Math.floor(h);
+            const mins = Math.floor((h - hrs) * 60);
+            return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+        };
+        
+        const timeLabel = block.type === 'melatonin' 
+            ? formatTime(block.startHour) 
+            : `${formatTime(block.startHour)} - ${formatTime(block.endHour)}`;
+            
+        bar.title = `${timeLabel}\n${block.label}\n${block.note || ''}`;
+
+        track.appendChild(bar);
+      });
+
+      row.appendChild(track);
+      rowsEl.appendChild(row);
+    });
+
+    container.classList.remove('hidden');
+  }
+
+  // Expose to global window object for the Calculator.astro script to call
+  (window as any).renderGanttTimeline = renderTimeline;
+</script>

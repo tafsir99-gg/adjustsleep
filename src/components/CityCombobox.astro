@@ -1,0 +1,240 @@
+---
+// src/components/CityCombobox.astro
+
+interface Props {
+  id: string;
+  name: string;
+  label: string;
+  placeholder: string;
+  required?: boolean;
+}
+
+const { id, name, label, placeholder, required = false } = Astro.props;
+---
+
+<div class="relative" data-combobox id={`combobox-wrapper-${id}`}>
+  <label for={id} class="block font-mono text-[12px] uppercase text-[var(--theme-body)] mb-xs tracking-wider">
+    {label}
+  </label>
+  
+  <div class="relative">
+    <input 
+      type="text" 
+      id={id} 
+      autocomplete="off"
+      role="combobox"
+      aria-expanded="false"
+      aria-autocomplete="list"
+      aria-controls={`${id}-listbox`}
+      placeholder={placeholder}
+      class="w-full h-[40px] px-sm bg-[var(--theme-canvas)] border border-[var(--theme-hairline)] rounded-sm text-body-sm text-[var(--theme-ink)] focus-ring placeholder:text-[var(--theme-mute)]"
+      {...required ? { required: true } : {}}
+    />
+    <!-- Hidden input to store actual tz value for form submission -->
+    <input type="hidden" name={name} id={`${id}-tz`} value="" {...required ? { required: true } : {}} />
+    
+    <div class="absolute right-3 top-[10px] pointer-events-none text-[var(--theme-mute)]">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
+
+  <ul 
+    id={`${id}-listbox`}
+    role="listbox"
+    class="absolute z-10 w-full mt-1 bg-[var(--theme-canvas)] border border-[var(--theme-hairline)] rounded-sm shadow-md max-h-[240px] overflow-y-auto hidden"
+  >
+    <!-- Options injected via JS -->
+  </ul>
+</div>
+
+<script>
+  import cityTimezones from 'city-timezones';
+
+  // Map the 12,000+ dataset, keeping population for smart timezone matching
+  const cities = (cityTimezones.cityMapping as any[]).map(c => ({
+    name: String(c.city),
+    tz: String(c.timezone),
+    country: String(c.country),
+    pop: Number(c.pop) || 0,
+    detail: c.province ? `${c.province}, ${c.country}` : String(c.country)
+  }));
+
+  // Default global hubs shown when dropdown opens with no query
+  const HUB_NAMES = [
+    'New York', 'London', 'Dubai', 'Tokyo', 'Singapore', 'Sydney',
+    'Paris', 'Los Angeles', 'Hong Kong', 'Toronto', 'Mumbai',
+    'Istanbul', 'Dhaka', 'São Paulo', 'Seoul'
+  ];
+
+  // Pre-build the default list by exact name match (fast, runs once at module load)
+  const defaultCities = HUB_NAMES.flatMap(hub => {
+    const match = cities.find(c => c.name === hub);
+    return match ? [match] : [];
+  });
+
+  class Combobox {
+    wrapper: HTMLElement;
+    input: HTMLInputElement;
+    hiddenInput: HTMLInputElement;
+    listbox: HTMLUListElement;
+    isOpen = false;
+    activeIndex = -1;
+    filteredData: typeof cities = [];
+
+    constructor(wrapperId: string) {
+      this.wrapper = document.getElementById(wrapperId) as HTMLElement;
+      this.input = this.wrapper.querySelector('input[type="text"]') as HTMLInputElement;
+      this.hiddenInput = this.wrapper.querySelector('input[type="hidden"]') as HTMLInputElement;
+      this.listbox = this.wrapper.querySelector('[role="listbox"]') as HTMLUListElement;
+
+      this.init();
+    }
+
+    init() {
+      this.input.addEventListener('input', () => this.onInput());
+      this.input.addEventListener('focus', () => this.onInput());
+      this.input.addEventListener('blur', () => setTimeout(() => this.close(), 150));
+      this.input.addEventListener('keydown', (e) => this.onKeyDown(e));
+      
+      // Setup auto-detect if departure
+      if (this.input.id === 'departure-city') {
+        this.autoDetectLocal();
+      }
+    }
+
+    autoDetectLocal() {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      // Pick the most-populous city for this timezone so 'Asia/Dhaka'
+      // resolves to 'Dhaka' (pop ~6.97M) rather than 'Tangail' (pop ~150k)
+      const candidates = cities.filter(c => c.tz === tz);
+      if (candidates.length === 0) return;
+      const best = candidates.reduce((a, b) => (b.pop > a.pop ? b : a));
+      this.selectItem(best);
+    }
+
+    onInput() {
+      const val = this.input.value.toLowerCase().trim();
+
+      if (!val) {
+        // Show curated default hubs when the field is empty
+        this.filteredData = defaultCities;
+        this.renderList(true);
+        this.open();
+        return;
+      }
+
+      // FIX: Filter the ENTIRE dataset first, THEN slice the top 50.
+      // The old early-break loop incorrectly stopped scanning after finding
+      // 50 matches from the start of the alphabetical list (Afghan cities).
+      this.filteredData = cities
+        .filter(c =>
+          c.name.toLowerCase().includes(val) ||
+          c.country.toLowerCase().includes(val)
+        )
+        .slice(0, 50);
+
+      this.renderList(false);
+      this.open();
+    }
+
+    renderList(isDefault = false) {
+      this.listbox.innerHTML = '';
+
+      if (this.filteredData.length === 0) {
+        this.listbox.innerHTML = '<li class="px-sm py-2 text-body-sm text-[var(--theme-mute)]">No cities found</li>';
+        return;
+      }
+
+      if (isDefault) {
+        const header = document.createElement('li');
+        header.className = 'px-sm pt-2 pb-1 font-mono text-[10px] uppercase tracking-wider text-[var(--theme-mute)] select-none';
+        header.setAttribute('aria-hidden', 'true');
+        header.textContent = 'Popular Destinations';
+        this.listbox.appendChild(header);
+      }
+
+      this.filteredData.forEach((city, index) => {
+        const li = document.createElement('li');
+        li.role = 'option';
+        li.id = `${this.input.id}-option-${index}`;
+        li.className = 'px-sm py-2 cursor-pointer text-body-sm text-[var(--theme-ink)] hover:bg-[var(--theme-canvas-soft-2)]';
+        li.innerHTML = `<span class="font-medium">${city.name}</span> <span class="text-[var(--theme-mute)] ml-2 text-[12px]">${city.detail}</span>`;
+
+        li.addEventListener('click', () => this.selectItem(city));
+        this.listbox.appendChild(li);
+      });
+    }
+
+    selectItem(city: typeof cities[0]) {
+      this.input.value = city.name;
+      this.hiddenInput.value = city.tz;
+      this.close();
+      // Dispatch custom event for the form to know a city was picked
+      this.input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    open() {
+      this.isOpen = true;
+      this.input.setAttribute('aria-expanded', 'true');
+      this.listbox.classList.remove('hidden');
+    }
+
+    close() {
+      this.isOpen = false;
+      this.activeIndex = -1;
+      this.input.setAttribute('aria-expanded', 'false');
+      this.listbox.classList.add('hidden');
+    }
+
+    onKeyDown(e: KeyboardEvent) {
+      if (!this.isOpen && e.key === 'ArrowDown') {
+        this.onInput();
+        return;
+      }
+
+      const items = Array.from(this.listbox.querySelectorAll('[role="option"]'));
+      if (items.length === 0) return;
+
+      switch(e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          this.activeIndex = Math.min(this.activeIndex + 1, items.length - 1);
+          this.highlightItem(items);
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          this.activeIndex = Math.max(this.activeIndex - 1, 0);
+          this.highlightItem(items);
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (this.activeIndex >= 0) {
+            this.selectItem(this.filteredData[this.activeIndex]);
+          }
+          break;
+        case 'Escape':
+          this.close();
+          break;
+      }
+    }
+
+    highlightItem(items: Element[]) {
+      items.forEach(item => item.classList.remove('bg-[var(--theme-canvas-soft-2)]'));
+      if (this.activeIndex >= 0) {
+        const item = items[this.activeIndex] as HTMLElement;
+        item.classList.add('bg-[var(--theme-canvas-soft-2)]');
+        item.scrollIntoView({ block: 'nearest' });
+        this.input.setAttribute('aria-activedescendant', item.id);
+      }
+    }
+  }
+
+  // Initialize all comboboxes on the page
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-combobox]').forEach(el => {
+      new Combobox(el.id);
+    });
+  });
+</script>

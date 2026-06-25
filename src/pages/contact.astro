@@ -1,0 +1,40 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+const title = "Contact Us | Adjust Sleep";
+const description = "Get in touch with the Adjust Sleep team for support, feedback, or inquiries.";
+---
+
+<Layout title={title} description={description}>
+  <Navbar />
+  <main class="flex-1 max-w-[800px] mx-auto w-full px-4 md:px-lg py-section">
+    <div class="space-y-8">
+      <div>
+        <h1 class="font-sans font-semibold text-display-lg text-[var(--theme-ink)] tracking-tight mb-4">Contact Us</h1>
+        <p class="text-[var(--theme-body)]">We'd love to hear from you. Reach out with questions, feedback, or partnership inquiries.</p>
+      </div>
+
+      <div class="bg-[var(--theme-canvas-soft)] border border-[var(--theme-hairline)] rounded-lg p-8 shadow-sm">
+        <div class="space-y-6 text-[var(--theme-body)]">
+          <div>
+            <h2 class="font-sans font-semibold text-[var(--theme-ink)] mb-1">Email</h2>
+            <a href="mailto:tafsiradm56@gmail.com" class="text-[var(--color-link)] hover:underline">tafsiradm56@gmail.com</a>
+          </div>
+
+          <div>
+            <h2 class="font-sans font-semibold text-[var(--theme-ink)] mb-1">Feedback & Feature Requests</h2>
+            <p>If you're an engineer or designer who wants to contribute, visit our <a href="https://github.com/tafsir99-gg" class="text-[var(--color-link)] hover:underline">GitHub repository</a>.</p>
+          </div>
+
+          <div>
+            <h2 class="font-sans font-semibold text-[var(--theme-ink)] mb-1">Press Inquiries</h2>
+            <a href="mailto:tafsiradm56@gmail.com" class="text-[var(--color-link)] hover:underline">tafsiradm56@gmail.com</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>

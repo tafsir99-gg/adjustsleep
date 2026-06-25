@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+const title = "404: Page Not Found | Adjust Sleep";
+const description = "The page you are looking for doesn't exist.";
+---
+
+<Layout title={title} description={description}>
+  <Navbar />
+  <main class="flex-1 flex flex-col items-center justify-center px-4 py-24 md:py-32 text-center mt-auto mb-auto">
+    <div class="max-w-[600px] mx-auto">
+      <h1 class="font-mono text-[var(--theme-ink)] opacity-50 text-caption-mono uppercase tracking-wider mb-4">404 Error</h1>
+      <h2 class="font-sans font-semibold text-[40px] md:text-[64px] leading-[1.1] tracking-tight text-[var(--theme-ink)] mb-6">Page Not Found</h2>
+      <p class="font-sans text-[18px] text-[var(--theme-body)] mb-10 max-w-[400px] mx-auto">
+        The page you are looking for doesn't exist.
+      </p>
+      <a href="/" class="inline-flex items-center justify-center px-8 h-[48px] bg-[var(--theme-primary)] text-[var(--theme-on-primary)] rounded-full font-medium text-[16px] hover:opacity-90 transition-opacity focus-ring shadow-sm">
+        Return Home
+      </a>
+    </div>
+  </main>
+  <Footer />
+</Layout>

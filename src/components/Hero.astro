@@ -1,0 +1,33 @@
+---
+// src/components/Hero.astro
+---
+
+<div class="relative overflow-hidden bg-[var(--theme-canvas-soft)] py-section px-4 md:px-lg text-center border-b border-[var(--theme-hairline)]">
+  <!-- Atmospheric Mesh Gradient Backdrop -->
+  <div class="absolute inset-0 pointer-events-none opacity-20 dark:opacity-30 mix-blend-multiply dark:mix-blend-screen overflow-hidden" aria-hidden="true">
+    <div class="absolute top-[-50%] left-[-10%] w-[120%] h-[150%] animate-pulse" 
+         style="background: radial-gradient(circle at 30% 50%, var(--color-gradient-develop-start) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 40%, var(--color-gradient-preview-start) 0%, transparent 50%),
+                    radial-gradient(circle at 50% 80%, var(--color-gradient-ship-end) 0%, transparent 50%); filter: blur(80px);">
+    </div>
+  </div>
+
+  <div class="relative max-w-[960px] mx-auto flex flex-col items-center">
+    <h1 class="font-sans font-semibold text-[32px] sm:text-[40px] md:text-[48px] leading-[1.1] tracking-[-1.5px] md:tracking-[-2.4px] text-[var(--theme-ink)] mb-4 md:mb-6 text-balance">
+      Beat jet lag.<br class="md:hidden" /> Master your rhythm.
+    </h1>
+    
+    <p class="font-sans text-[16px] md:text-[20px] leading-[1.6] text-[var(--theme-body)] mb-8 md:mb-10 max-w-[600px] text-balance">
+      Science-backed light exposure and melatonin timing algorithms, packaged into a beautiful timeline you can export directly to your calendar.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4">
+      <a href="#calculator" class="inline-flex items-center justify-center px-8 h-[48px] bg-[var(--theme-primary)] text-[var(--theme-on-primary)] rounded-full font-medium text-[16px] hover:opacity-90 transition-opacity focus-ring shadow-md">
+        Generate Schedule
+      </a>
+      <a href="#science" class="inline-flex items-center justify-center px-8 h-[48px] bg-[var(--theme-canvas)] text-[var(--theme-ink)] border border-[var(--theme-hairline)] rounded-full font-medium text-[16px] hover:bg-[var(--theme-canvas-soft)] transition-colors focus-ring shadow-sm">
+        View the Science
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,126 @@
+---
+// src/components/Calculator.astro
+import FlightInputs from './FlightInputs.astro';
+import GanttTimeline from './GanttTimeline.astro';
+import InFlightPlan from './InFlightPlan.astro';
+import CalendarExport from './CalendarExport.astro';
+---
+
+<section id="calculator" class="max-w-[1000px] mx-auto px-4 md:px-lg py-section">
+  <div class="text-center mb-12">
+    <h2 class="font-mono text-caption-mono text-[var(--theme-body)] uppercase tracking-wider mb-4">Step 1: Your Details</h2>
+    <h3 class="font-sans font-semibold text-display-lg text-[var(--theme-ink)] tracking-[-1.28px]">Build your custom algorithm.</h3>
+  </div>
+
+  <!-- The form inputs -->
+  <FlightInputs />
+
+  <!-- Loading State -->
+  <div id="calc-loading" class="hidden my-12 text-center">
+    <div class="inline-block w-8 h-8 border-4 border-[var(--theme-hairline)] border-t-[var(--theme-ink)] rounded-full animate-spin"></div>
+    <p class="mt-4 font-mono text-[12px] text-[var(--theme-mute)] uppercase tracking-widest">Computing Phase Shifts...</p>
+  </div>
+
+  <!-- Results Section -->
+  <div id="calc-results" class="hidden mt-section animate-fade-in">
+    <div class="text-center mb-12">
+      <h2 class="font-mono text-caption-mono text-[var(--theme-body)] uppercase tracking-wider mb-4">Step 2: Your Plan</h2>
+      <h3 class="font-sans font-semibold text-display-lg text-[var(--theme-ink)] tracking-[-1.28px]">Execute the protocol.</h3>
+      
+      <div class="inline-flex mt-6 gap-2 items-center bg-[var(--theme-canvas-soft-2)] px-4 py-2 rounded-full border border-[var(--theme-hairline)] shadow-sm">
+        <span class="text-body-md text-[var(--theme-ink)]">You are shifting</span>
+        <span id="result-delta" class="font-mono font-bold text-[18px] text-[var(--color-link)]">0h</span>
+        <span id="result-direction" class="text-body-md text-[var(--theme-ink)] font-bold">East</span>
+      </div>
+    </div>
+
+    <div class="space-y-8">
+      <GanttTimeline />
+      <InFlightPlan />
+      <CalendarExport />
+    </div>
+  </div>
+</section>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+</style>
+
+<script>
+  import { calculateSchedule } from '../lib/circadian';
+  import type { TripInput } from '../lib/types';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('calculator-form') as HTMLFormElement;
+    const loadingEl = document.getElementById('calc-loading');
+    const resultsEl = document.getElementById('calc-results');
+    
+    const deltaEl = document.getElementById('result-delta');
+    const dirEl = document.getElementById('result-direction');
+
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const input: TripInput = {
+        departureTZ: formData.get('departureTZ') as string,
+        arrivalTZ: formData.get('arrivalTZ') as string,
+        departureDate: formData.get('departureDate') as string,
+        departureTime: formData.get('departureTime') as string,
+        arrivalDate: formData.get('arrivalDate') as string,
+        arrivalTime: formData.get('arrivalTime') as string,
+        normalSleepStart: formData.get('normalSleepStart') as string,
+        normalWakeTime: formData.get('normalWakeTime') as string,
+        strategy: formData.get('strategy') as TripInput['strategy'],
+        includeMelatonin: formData.get('includeMelatonin') === 'true',
+        preDays: parseInt(formData.get('preDays') as string || '0', 10),
+      };
+
+      if (!input.departureTZ || !input.arrivalTZ) {
+        alert('Please select valid departure and arrival cities from the dropdown.');
+        return;
+      }
+
+      // Show loading (fake small delay for perceived value of "computation")
+      resultsEl?.classList.add('hidden');
+      loadingEl?.classList.remove('hidden');
+
+      setTimeout(() => {
+        try {
+          const result = calculateSchedule(input);
+          
+          if (deltaEl) deltaEl.textContent = `${Math.abs(result.deltaHours)}h`;
+          if (dirEl) dirEl.textContent = result.direction.toUpperCase();
+
+          // Call global render functions attached by the respective components
+          if ((window as any).renderGanttTimeline) {
+            (window as any).renderGanttTimeline(result.schedule);
+          }
+          if ((window as any).renderFlightPlan) {
+            (window as any).renderFlightPlan(result.flightPlan);
+          }
+          if ((window as any).setupExport) {
+            (window as any).setupExport(result.schedule, input.arrivalTZ);
+          }
+
+          loadingEl?.classList.add('hidden');
+          resultsEl?.classList.remove('hidden');
+          
+          // Scroll to results
+          resultsEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          
+        } catch (err) {
+          console.error(err);
+          alert('An error occurred calculating the schedule. Please check your inputs.');
+          loadingEl?.classList.add('hidden');
+        }
+      }, 600);
+    });
+  });
+</script>

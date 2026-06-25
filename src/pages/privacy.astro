@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+const title = "Privacy Policy | Adjust Sleep";
+const description = "Privacy Policy for Adjust Sleep. Learn how we handle your data locally without external tracking.";
+---
+
+<Layout title={title} description={description}>
+  <Navbar />
+  <main class="flex-1 max-w-[800px] mx-auto w-full px-4 md:px-lg py-section">
+    <div class="space-y-8">
+      <div>
+        <h1 class="font-sans font-semibold text-display-lg text-[var(--theme-ink)] tracking-tight mb-4">Privacy Policy</h1>
+        <p class="text-[var(--theme-body)]">Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+      </div>
+
+      <div class="prose prose-invert max-w-none text-[var(--theme-body)] space-y-6">
+        <h2 class="font-sans font-semibold text-body-lg text-[var(--theme-ink)]">1. Introduction</h2>
+        <p>At Adjust Sleep, we take your privacy seriously. Our jet lag calculator is designed with a privacy-first approach. All calculations are performed locally in your browser.</p>
+
+        <h2 class="font-sans font-semibold text-body-lg text-[var(--theme-ink)]">2. Data Collection</h2>
+        <p>We do not collect, store, or transmit any personal data, travel itineraries, or health information. When you input your departure city, destination, and sleep habits, this data remains entirely on your device.</p>
+
+        <h2 class="font-sans font-semibold text-body-lg text-[var(--theme-ink)]">3. Local Storage</h2>
+        <p>We may use browser local storage solely to save your UI preferences, such as your light/dark mode selection. This data is never sent to our servers.</p>
+
+        <h2 class="font-sans font-semibold text-body-lg text-[var(--theme-ink)]">4. Third-Party Services</h2>
+        <p>Our application uses zero external APIs for core calculations. The city timezone dataset is bundled directly into the application.</p>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>

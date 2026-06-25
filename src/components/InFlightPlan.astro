@@ -1,0 +1,94 @@
+---
+// src/components/InFlightPlan.astro
+---
+
+<div id="flight-plan-container" class="hidden flex flex-col w-full bg-[var(--theme-canvas-soft)] rounded-lg p-4 md:p-lg shadow-sm border border-[var(--theme-hairline)]">
+  <h3 class="font-sans font-semibold text-display-md text-[var(--theme-ink)] tracking-[-0.96px] mb-6">In-Flight Action Plan</h3>
+
+  <div class="relative border-l-2 border-[var(--theme-hairline-strong)] ml-4 pl-6 pb-4">
+    
+    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[var(--theme-canvas)] border-2 border-[var(--theme-hairline-strong)] flex items-center justify-center">
+        <div class="w-1.5 h-1.5 rounded-full bg-[var(--theme-ink)]"></div>
+    </div>
+    <div class="font-mono text-caption-mono text-[var(--theme-body)] uppercase mb-4 mt-[-4px]">Takeoff</div>
+
+    <div id="flight-segments-list" class="space-y-6">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="absolute -left-[9px] bottom-0 w-4 h-4 rounded-full bg-[var(--theme-canvas)] border-2 border-[var(--theme-hairline-strong)] flex items-center justify-center">
+        <div class="w-1.5 h-1.5 rounded-full bg-[var(--theme-ink)]"></div>
+    </div>
+    <div class="font-mono text-caption-mono text-[var(--theme-body)] uppercase mt-6 mb-[-4px]">Landing</div>
+  </div>
+</div>
+
+<script>
+  import type { FlightSegment } from '../lib/types';
+
+  function formatDuration(minutes: number) {
+      const h = Math.floor(minutes / 60);
+      const m = Math.floor(minutes % 60);
+      if (h > 0 && m > 0) return `${h}h ${m}m`;
+      if (h > 0) return `${h}h`;
+      return `${m}m`;
+  }
+
+  function getIcon(type: FlightSegment['type']) {
+      switch(type) {
+          case 'eye-mask': return '😴';
+          case 'cabin-light': return '☀️';
+          case 'melatonin': return '💊';
+          default: return '✈️';
+      }
+  }
+
+  export function renderFlightPlan(plan: FlightSegment[]) {
+    const container = document.getElementById('flight-plan-container');
+    const listEl = document.getElementById('flight-segments-list');
+    if (!container || !listEl) return;
+
+    if (plan.length === 0) {
+        container.classList.add('hidden');
+        return;
+    }
+
+    listEl.innerHTML = '';
+
+    plan.forEach((segment, i) => {
+      const item = document.createElement('div');
+      item.className = 'relative group';
+
+      // Timeline dot
+      const dot = document.createElement('div');
+      dot.className = 'absolute -left-[33px] top-1 w-3 h-3 rounded-full bg-[var(--theme-canvas)] border-2 border-[var(--theme-hairline-strong)] group-hover:border-[var(--color-link)] transition-colors';
+      item.appendChild(dot);
+
+      const timeLabel = document.createElement('div');
+      timeLabel.className = 'font-mono text-caption text-[var(--theme-mute)] mb-1';
+      timeLabel.textContent = `+${formatDuration(segment.startMinute)} — +${formatDuration(segment.endMinute)}`;
+      
+      const contentRow = document.createElement('div');
+      contentRow.className = 'flex items-center gap-3 bg-[var(--theme-canvas)] p-3 rounded-md border border-[var(--theme-hairline)] shadow-sm';
+      
+      const icon = document.createElement('div');
+      icon.className = 'text-xl shrink-0 w-8 text-center';
+      icon.textContent = getIcon(segment.type);
+
+      const label = document.createElement('div');
+      label.className = 'font-sans text-body-md text-[var(--theme-ink)] font-medium';
+      label.textContent = segment.label;
+
+      contentRow.appendChild(icon);
+      contentRow.appendChild(label);
+
+      item.appendChild(timeLabel);
+      item.appendChild(contentRow);
+      listEl.appendChild(item);
+    });
+
+    container.classList.remove('hidden');
+  }
+
+  (window as any).renderFlightPlan = renderFlightPlan;
+</script>

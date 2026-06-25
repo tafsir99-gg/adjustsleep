@@ -1,0 +1,85 @@
+---
+// src/components/FlightInputs.astro
+import CityCombobox from './CityCombobox.astro';
+import StrategySelector from './StrategySelector.astro';
+
+// Calculate today's date for defaults
+const today = new Date();
+const todayStr = today.toISOString().split('T')[0];
+
+const tomorrow = new Date(today);
+tomorrow.setDate(tomorrow.getDate() + 1);
+const tomorrowStr = tomorrow.toISOString().split('T')[0];
+---
+
+<div class="bg-[var(--theme-canvas)] rounded-lg p-4 md:p-lg shadow-sm border border-[var(--theme-hairline)] w-full">
+  <form id="calculator-form" class="space-y-6">
+    <!-- Row 1: Departure -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="md:col-span-1">
+        <CityCombobox 
+          id="departure-city" 
+          name="departureTZ" 
+          label="Departure City" 
+          placeholder="e.g. New York" 
+          required 
+        />
+      </div>
+      <div>
+        <label for="departure-date" class="block font-mono text-[12px] uppercase text-[var(--theme-body)] mb-xs tracking-wider">Date</label>
+        <input type="date" id="departure-date" name="departureDate" value={todayStr} required class="w-full h-[40px] pl-4 pr-2 bg-[var(--theme-canvas)] border border-[var(--theme-hairline)] rounded-sm text-body-sm text-[var(--theme-ink)] focus-ring" />
+      </div>
+      <div>
+        <label for="departure-time" class="block font-mono text-[12px] uppercase text-[var(--theme-body)] mb-xs tracking-wider">Time</label>
+        <input type="time" id="departure-time" name="departureTime" value="10:00" required class="w-full h-[40px] pl-4 pr-2 bg-[var(--theme-canvas)] border border-[var(--theme-hairline)] rounded-sm text-body-sm text-[var(--theme-ink)] focus-ring" />
+      </div>
+    </div>
+
+    <!-- Row 2: Arrival -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="md:col-span-1">
+        <CityCombobox 
+          id="arrival-city" 
+          name="arrivalTZ" 
+          label="Arrival City" 
+          placeholder="e.g. London" 
+          required 
+        />
+      </div>
+      <div>
+        <label for="arrival-date" class="block font-mono text-[12px] uppercase text-[var(--theme-body)] mb-xs tracking-wider">Date</label>
+        <input type="date" id="arrival-date" name="arrivalDate" value={tomorrowStr} required class="w-full h-[40px] pl-4 pr-2 bg-[var(--theme-canvas)] border border-[var(--theme-hairline)] rounded-sm text-body-sm text-[var(--theme-ink)] focus-ring" />
+      </div>
+      <div>
+        <label for="arrival-time" class="block font-mono text-[12px] uppercase text-[var(--theme-body)] mb-xs tracking-wider">Time</label>
+        <input type="time" id="arrival-time" name="arrivalTime" value="08:00" required class="w-full h-[40px] pl-4 pr-2 bg-[var(--theme-canvas)] border border-[var(--theme-hairline)] rounded-sm text-body-sm text-[var(--theme-ink)] focus-ring" />
+      </div>
+    </div>
+
+    <hr class="border-[var(--theme-hairline)]" />
+
+    <!-- Row 3: Sleep Habits -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label for="sleep-start" class="block font-mono text-[12px] uppercase text-[var(--theme-body)] mb-xs tracking-wider">Normal Bedtime</label>
+        <input type="time" id="sleep-start" name="normalSleepStart" value="23:00" required class="w-full h-[40px] pl-4 pr-2 bg-[var(--theme-canvas)] border border-[var(--theme-hairline)] rounded-sm text-body-sm text-[var(--theme-ink)] focus-ring" />
+      </div>
+      <div>
+        <label for="wake-time" class="block font-mono text-[12px] uppercase text-[var(--theme-body)] mb-xs tracking-wider">Normal Wake Time</label>
+        <input type="time" id="wake-time" name="normalWakeTime" value="07:00" required class="w-full h-[40px] pl-4 pr-2 bg-[var(--theme-canvas)] border border-[var(--theme-hairline)] rounded-sm text-body-sm text-[var(--theme-ink)] focus-ring" />
+      </div>
+    </div>
+
+    <hr class="border-[var(--theme-hairline)]" />
+
+    <!-- Row 4: Strategy -->
+    <StrategySelector />
+
+    <!-- Submit -->
+    <div class="pt-4 flex justify-end">
+      <button type="submit" class="w-full sm:w-auto h-[48px] px-lg bg-[var(--theme-primary)] text-[var(--theme-on-primary)] font-medium text-[16px] rounded-pill focus-ring hover:opacity-90 transition-opacity disabled:opacity-50">
+        Generate Schedule
+      </button>
+    </div>
+  </form>
+</div>

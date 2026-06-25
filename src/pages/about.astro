@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+const title = "About Us | Adjust Sleep";
+const description = "Learn about Adjust Sleep, the science-backed jet lag calculator built to help you master your circadian rhythm.";
+---
+
+<Layout title={title} description={description}>
+  <Navbar />
+  <main class="flex-1 max-w-[800px] mx-auto w-full px-4 md:px-lg py-section">
+    <div class="space-y-8">
+      <div>
+        <h1 class="font-sans font-semibold text-display-lg text-[var(--theme-ink)] tracking-tight mb-4">About Adjust Sleep</h1>
+      </div>
+
+      <div class="prose prose-invert max-w-none text-[var(--theme-body)] space-y-6">
+        <p class="text-[18px] leading-relaxed">
+          Adjust Sleep was built with a singular mission: to make the science of circadian rhythms accessible, practical, and beautiful. 
+        </p>
+
+        <h2 class="font-sans font-semibold text-body-lg text-[var(--theme-ink)]">The Problem</h2>
+        <p>Jet lag isn't just about feeling tired; it's a fundamental misalignment of your biology. For decades, the protocols used by elite athletes, astronauts, and military personnel to rapidly shift their internal clocks have been locked behind complex academic papers or expensive consulting fees.</p>
+
+        <h2 class="font-sans font-semibold text-body-lg text-[var(--theme-ink)]">Our Solution</h2>
+        <p>We built an algorithmic engine based directly on the Phase Response Curve (PRC). By mapping your Core Body Temperature Minimum (CBTmin), Adjust Sleep calculates the precise mathematical windows where light exposure will advance or delay your clock safely.</p>
+
+        <h2 class="font-sans font-semibold text-body-lg text-[var(--theme-ink)]">Privacy & Design</h2>
+        <p>We believe in tools that respect the user. That's why Adjust Sleep features a stark, minimalist design, zero external APIs, and performs all calculations locally in your browser. Fast, secure, and built for modern travelers.</p>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>

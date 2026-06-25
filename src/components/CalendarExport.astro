@@ -1,0 +1,48 @@
+---
+// src/components/CalendarExport.astro
+---
+
+<div id="export-container" class="hidden flex flex-col sm:flex-row items-center justify-between bg-[var(--theme-canvas-soft)] p-md rounded-md border border-[var(--theme-hairline)] mt-8">
+  <div class="mb-4 sm:mb-0">
+    <h4 class="font-sans font-medium text-body-md-strong text-[var(--theme-ink)]">Export Schedule</h4>
+    <p class="text-body-sm text-[var(--theme-body)]">Sync your personalized light and sleep schedule to your calendar.</p>
+  </div>
+  
+  <button id="download-ics-btn" class="inline-flex items-center justify-center px-6 h-[40px] bg-[var(--theme-primary)] text-[var(--theme-on-primary)] rounded-pill font-medium text-[14px] hover:opacity-90 transition-opacity focus-ring shadow-sm gap-2">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="7 10 12 15 17 10"></polyline>
+      <line x1="12" y1="15" x2="12" y2="3"></line>
+    </svg>
+    Download .ics File
+  </button>
+</div>
+
+<script>
+  import { generateICS, downloadBlob } from '../lib/ics-generator';
+  import type { ScheduleDay } from '../lib/types';
+
+  let currentSchedule: ScheduleDay[] = [];
+  let currentArrivalTZ: string = '';
+
+  export function setupExport(schedule: ScheduleDay[], arrivalTZ: string) {
+    currentSchedule = schedule;
+    currentArrivalTZ = arrivalTZ;
+    
+    const container = document.getElementById('export-container');
+    if (container && schedule.length > 0) {
+      container.classList.remove('hidden');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('download-ics-btn');
+    btn?.addEventListener('click', () => {
+      if (currentSchedule.length === 0) return;
+      const blob = generateICS(currentSchedule, currentArrivalTZ);
+      downloadBlob(blob, 'adjust-sleep-plan.ics');
+    });
+  });
+
+  (window as any).setupExport = setupExport;
+</script>

@@ -1,0 +1,70 @@
+---
+// src/components/StrategySelector.astro
+---
+
+<div class="space-y-4">
+  <div class="space-y-2">
+    <label class="block font-mono text-[12px] uppercase text-[var(--theme-body)] tracking-wider">Adjustment Strategy</label>
+    <div class="flex flex-wrap gap-2">
+      <!-- Custom radio pills -->
+      <label class="cursor-pointer">
+        <input type="radio" name="strategy" value="pre-flight" class="peer sr-only" checked>
+        <span class="inline-flex h-[32px] items-center px-4 rounded-full bg-[var(--theme-canvas)] text-[var(--theme-ink)] text-body-sm border border-[var(--theme-hairline)] peer-checked:bg-[var(--theme-ink)] peer-checked:text-[var(--theme-canvas)] transition-colors">
+          Pre-flight (Recommended)
+        </span>
+      </label>
+      <label class="cursor-pointer">
+        <input type="radio" name="strategy" value="in-flight" class="peer sr-only">
+        <span class="inline-flex h-[32px] items-center px-4 rounded-full bg-[var(--theme-canvas)] text-[var(--theme-ink)] text-body-sm border border-[var(--theme-hairline)] peer-checked:bg-[var(--theme-ink)] peer-checked:text-[var(--theme-canvas)] transition-colors">
+          Start on Flight
+        </span>
+      </label>
+      <label class="cursor-pointer">
+        <input type="radio" name="strategy" value="post-flight" class="peer sr-only">
+        <span class="inline-flex h-[32px] items-center px-4 rounded-full bg-[var(--theme-canvas)] text-[var(--theme-ink)] text-body-sm border border-[var(--theme-hairline)] peer-checked:bg-[var(--theme-ink)] peer-checked:text-[var(--theme-canvas)] transition-colors">
+          Post-flight Only
+        </span>
+      </label>
+    </div>
+  </div>
+
+  <div class="space-y-2" id="pre-days-container">
+    <label class="block font-mono text-[12px] uppercase text-[var(--theme-body)] tracking-wider">Pre-flight Days</label>
+    <div class="flex gap-2">
+      {[1, 2, 3, 4, 5].map((day) => (
+        <label class="cursor-pointer flex-1">
+          <input type="radio" name="preDays" value={day} class="peer sr-only" checked={day === 3}>
+          <span class="flex h-[32px] items-center justify-center rounded-sm bg-[var(--theme-canvas-soft)] text-[var(--theme-ink)] text-body-sm border border-[var(--theme-hairline)] peer-checked:border-[var(--theme-ink)] peer-checked:font-medium transition-colors">
+            {day}
+          </span>
+        </label>
+      ))}
+    </div>
+    <p class="text-[12px] text-[var(--theme-mute)]">Number of days to shift your clock 1 hour/day before departure.</p>
+  </div>
+
+  <div class="flex items-center gap-3 pt-2">
+    <label class="relative flex items-center cursor-pointer">
+      <input type="checkbox" name="includeMelatonin" value="true" class="sr-only peer" checked>
+      <div class="w-10 h-5 bg-[var(--theme-hairline-strong)] rounded-full peer peer-checked:bg-[var(--color-violet)] transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5 peer-checked:after:border-white"></div>
+    </label>
+    <span class="text-body-sm text-[var(--theme-ink)] font-medium">Include Melatonin Timing</span>
+  </div>
+</div>
+
+<script>
+  // Hide pre-days selector if strategy is not pre-flight
+  document.addEventListener('DOMContentLoaded', () => {
+    const strategyRadios = document.querySelectorAll('input[name="strategy"]');
+    const preDaysContainer = document.getElementById('pre-days-container');
+    
+    strategyRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const val = (e.target as HTMLInputElement).value;
+        if (preDaysContainer) {
+          preDaysContainer.style.display = val === 'pre-flight' ? 'block' : 'none';
+        }
+      });
+    });
+  });
+</script>
